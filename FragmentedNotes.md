@@ -1,4 +1,6 @@
-#ALLOW SELF SIGNED CERTS (TRUST ALL)
+
+# ALLOW SELF SIGNED CERTS (TRUST ALL)
+```PowerShell
 Add-Type @"
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
@@ -9,9 +11,10 @@ public class TrustAllCertsPolicy : ICertificatePolicy {
 }
 "@
 [System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy
+```
 
-
-#VLAN CREATE NOTES
+# VLAN CREATE NOTES
+```PowerShell
 $AppID = "100"
 $UrlVlans = "https://ipam.domain.com/api/$AppID/vlans/"
 foreach ($Vlan in $VlansToBeCreated) {
@@ -31,8 +34,10 @@ foreach ($Vlan in $VlansToBeCreated) {
       Write-Host "Result - Error: $($_.Exception.Message)" -ForegroundColor Red
     }
 }
+```
 
-#GET ALL ENDPOINTS AND SUBNETS FROM ALL AZURE SUBSCRIPTIONS IN A TENANT
+# GET ALL ENDPOINTS AND SUBNETS FROM ALL AZURE SUBSCRIPTIONS IN A TENANT
+```PowerShell
 # Start cloudshell in Azure Portal
 $allEndpoints = @()
 $subscriptions = Get-AzSubscription
@@ -70,9 +75,10 @@ foreach ($sub in $subscriptions) {
 }
 $allEndpoints
 $allEndpoints | Export-Csv -Path "nic-endpoints.csv" -NoTypeInformation    #Then Download the file "nic-endpoints.csv" and use output to create subnets and addresses i phpIPAM
+```
 
-
-#SUBNET CREATE NOTES
+# SUBNET CREATE NOTES
+```PowerShell
 $AppID = "100"
 $UrlVlans = "https://ipam.domain.com/api/$AppID/subnets/"
 foreach ($Subnet in $SubnetsToBeCreated) {      
@@ -108,3 +114,4 @@ foreach ($Subnet in $SubnetsToBeCreated) {
     }
   }
 }
+```

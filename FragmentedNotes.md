@@ -74,7 +74,15 @@ foreach ($sub in $subscriptions) {
     }
 }
 $allEndpoints
-$allEndpoints | Export-Csv -Path "nic-endpoints.csv" -NoTypeInformation    #Then Download the file "nic-endpoints.csv" and use output to create subnets and addresses i phpIPAM
+
+#Export CSV and download the file "nic-endpoints.csv" to local machine.
+$allEndpoints | Export-Csv -Path "nic-endpoints.csv" -NoTypeInformation    
+
+#Import CSV, and ready propery names for "Add-IPAMAddress.ps1" script
+$Addresses = Import-Csv .\nic-endpoints.csv | Select-Object  @{n='ip';e={$_.PrivateIPAddress}}, @{n='hostname';e={$_.NICName -replace "\..+$"}}, @{n='description';e={$_.Subscription}}
+
+#Pipe imported objects to Add-IPAMAddress.ps1. The samer outpuit could be used to create the subnets in IPAM first (se snippets below for insp)
+$Addresses | .\Add-IPAMAddress.ps1 -appid 100 -token 'TOKEN_HERE' -baseUrl 'https://ipam.domain.com/api'
 ```
 
 # SUBNET CREATE NOTES

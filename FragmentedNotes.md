@@ -32,6 +32,45 @@ foreach ($Vlan in $VlansToBeCreated) {
     }
 }
 
+#GET ALL ENDPOINTS AND SUBNETS FROM ALL AZURE SUBSCRIPTIONS IN A TENANT
+# Start cloudshell in Azure Portal
+$allEndpoints = @()
+$subscriptions = Get-AzSubscription
+
+foreach ($sub in $subscriptions) {
+    Set-AzContext -SubscriptionId $sub.Id | Out-Null
+
+    $vnets = Get-AzVirtualNetwork
+    foreach ($vnet in $vnets) {
+        foreach ($subnet in $vnet.Subnets) {
+            # Join address prefix(es) into a string
+            $subnetAddress = ($subnet.AddressPrefix -join ", ")
+
+            # Get all NICs in this subscription that are connected to this subnet
+            $nics = Get-AzNetworkInterface | Where-Object {
+                $_.IpConfigurations.Subnet.Id -eq $subnet.Id
+            }
+
+            foreach ($nic in $nics) {
+                foreach ($ipConfig in $nic.IpConfigurations) {
+                    $obj = [PSCustomObject]@{
+                        Subscription      = $sub.Name
+                        ResourceGroup     = $nic.ResourceGroupName
+                        VNet              = $vnet.Name
+                        Subnet            = $subnet.Name
+                        SubnetAddress     = $subnetAddress
+                        NICName           = $nic.Name
+                        PrivateIPAddress  = $ipConfig.PrivateIpAddress
+                    }
+                    $allEndpoints += $obj
+                }
+            }
+        }
+    }
+}
+$allEndpoints
+$allEndpoints | Export-Csv -Path "nic-endpoints.csv" -NoTypeInformation    #Then Download the file "nic-endpoints.csv" and use output to create subnets and addresses i phpIPAM
+
 
 #SUBNET CREATE NOTES
 $AppID = "100"

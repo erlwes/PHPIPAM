@@ -6,7 +6,7 @@
 #   - Each input object can have multiple IPs (to support multi homed endpoints with several NICs)
 #   - The subnets needs to exist in IPAM-already, but it will automatically figure out what subnet the address belongs in
 #   - Script accepts PSObject form pipeline with ip, hostname and desc properties
-#   - The idea is to use this script to create addresses from AD, hypervisor, csv or other sources, by piping
+#   - The idea is to use this script to create addresses from AD, Azure, AWS, your local hypervisor via. csv og PowerShell-objects with direct piping
 #
 # Requires HTTPS and a valid cert
 #   - To accept self signed, ovveride TLS settings on PowerShell-process/console before running script
